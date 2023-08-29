@@ -1,0 +1,94 @@
+Register Class Code 
+*******************
+
+private lateinit var tvTitle: TextView
+    private lateinit var edUserName: EditText
+    private lateinit var edPassword: EditText
+    private lateinit var edConfirmPassword: EditText
+    private lateinit var btnRegister: Button
+    private lateinit var btnLoginTwo: Button
+    private lateinit var tvTitleTwo: TextView
+    private lateinit var mAuth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_register)
+
+        tvTitle = findViewById(R.id.textView4)
+        edUserName = findViewById(R.id.edEmail)
+        edPassword = findViewById(R.id.edPass)
+        edConfirmPassword = findViewById(R.id.edConPass)
+        btnRegister = findViewById(R.id.btnReg)
+        btnLoginTwo = findViewById(R.id.btnLoginTwo)
+        tvTitleTwo = findViewById(R.id.loginText)
+
+        mAuth = FirebaseAuth.getInstance()
+    }
+
+    fun RegUser(view: View) {
+        if (view.id == R.id.btnReg) {
+            val email = edUserName.text.toString().trim()
+            val passwordReg = edPassword.text.toString().trim()
+            val conPassword = edConfirmPassword.text.toString().trim()
+            val newPassword = "SecureP@ssw0rd"
+
+
+                if (TextUtils.isEmpty(email)) {
+                    Toast.makeText(this, "Email cant be blank", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (TextUtils.isEmpty(passwordReg)) {
+                    Toast.makeText(this, "Password cant be blank", Toast.LENGTH_SHORT).show()
+                    return
+                }
+
+                if (TextUtils.isEmpty(conPassword)) {
+                    Toast.makeText(this, "Confirm Password cant be blank", Toast.LENGTH_SHORT)
+                        .show()
+                    return
+                }
+
+                if (conPassword == passwordReg) {
+                    mAuth.createUserWithEmailAndPassword(email, passwordReg)
+                        .addOnCompleteListener { task: Task<AuthResult> ->
+                            if (task.isSuccessful) {
+                                val intent = Intent(this@register, MainActivity::class.java)
+                                startActivity(intent)
+                                finish()
+                            } else
+                            {
+                                Toast.makeText(
+                                    this@register,
+                                    "Failed to Register",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            if (isPasswordValid(newPassword))
+                              {
+                                Toast.makeText(this, "Password has to contain 1 lowercase, 1 uppercase, a number and a special character", Toast.LENGTH_SHORT).show()
+                              }
+                }
+            }
+        }
+
+        fun LoginPage(view: View) {
+            val intent = Intent(this@register, Login::class.java)
+            startActivity(intent)
+        }
+
+
+
+    }
+    fun isPasswordValid(password: String): Boolean {
+        val minLength = 8
+        val hasUppercase = password.any { it.isUpperCase() }
+        val hasLowercase = password.any { it.isLowerCase() }
+        val hasDigit = password.any { it.isDigit() }
+        val hasSpecialChar = password.any { it.isLetterOrDigit().not() }
+
+        return password.length >= minLength &&
+                hasUppercase && hasLowercase &&
+                hasDigit && hasSpecialChar
+    }
+}

@@ -1,0 +1,171 @@
+Login Design(Not Complete)
+**************************
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#00bfff"
+    tools:context=".Login">
+
+
+    <EditText
+        android:id="@+id/editTextTextEmailAddress"
+        android:layout_width="310dp"
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/baseline_email_24"
+        android:hint="Email Address"
+        android:inputType="textEmailAddress"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.485"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.352" />
+
+    <EditText
+        android:id="@+id/editTextTextPassword"
+        android:layout_width="313dp"
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:drawableLeft="@drawable/baseline_password_24"
+        android:hint="Password"
+        android:importantForAutofill="no"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.459" />
+
+    <Button
+        android:id="@+id/btnLogin"
+        android:layout_width="152dp"
+        android:layout_height="45dp"
+        android:backgroundTint="@color/white"
+        android:onClick="login"
+        android:text="SIGN IN"
+        android:textColor="#00bfff"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.527"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.59" />
+
+    <TextView
+        android:id="@+id/registerTwo"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="DON'T HAVE AN ACCOUNT?"
+        android:textColor="@color/black"
+        android:textSize="25sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.505"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.7" />
+
+    <Button
+        android:id="@+id/btnRegisterTwo"
+        android:layout_width="145dp"
+        android:layout_height="40dp"
+        android:background="@color/lightBlue"
+        android:foreground="@color/white"
+        android:onClick="RegisterPage"
+        android:text="Register"
+        android:textColor="@color/lightBlue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.533"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.816" />
+
+    <ImageView
+        android:id="@+id/imageView4"
+        android:layout_width="407dp"
+        android:layout_height="190dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.428"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0"
+        
+        app:srcCompat="@drawable/bg" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
+
+
+Login Code
+***********
+private lateinit var edUserName: EditText
+    private lateinit var edPassword: EditText
+    private lateinit var btnLogin: Button
+    private lateinit var btnRegisterTwo: Button
+    
+    private lateinit var tvHeadingTwo: TextView
+    private lateinit var mAuth: FirebaseAuth
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_login)
+
+        edUserName = findViewById(R.id.editTextTextEmailAddress)
+        edPassword = findViewById(R.id.editTextTextPassword)
+        btnLogin = findViewById(R.id.btnLogin)
+        
+        tvHeadingTwo = findViewById(R.id.registerTwo)
+        btnRegisterTwo = findViewById(R.id.btnRegisterTwo)
+
+        mAuth = FirebaseAuth.getInstance()
+    }
+
+    fun login(view: View) {
+        try {
+            val email = edUserName.text.toString().trim()
+            val password = edPassword.text.toString().trim()
+
+            if (TextUtils.isEmpty(email))
+            {
+                Toast.makeText(this, "Enter a valid email", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            if (TextUtils.isEmpty(password))
+            {
+                Toast.makeText(this, "Enter valid email", Toast.LENGTH_SHORT).show()
+                return
+            }
+
+            mAuth.signInWithEmailAndPassword(email, password)
+                .addOnCompleteListener { task: Task<AuthResult> ->
+                    if (task.isSuccessful) {
+                        Toast.makeText(this@Login, "Logged in Successfully", Toast.LENGTH_SHORT).show()
+                        val intent = Intent(this@Login, MainActivity::class.java)
+                        startActivity(intent)
+                        finish()
+                    } else {
+                        Toast.makeText(this@Login, "Login Failed!!! Username or Password is incorrect", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+    fun RegisterPage(view: View) {
+        val intent = Intent(this@Login, register::class.java)
+        startActivity(intent)
+    }
+}
